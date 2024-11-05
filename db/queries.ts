@@ -62,6 +62,7 @@ export async function saveChat({
   id: string;
   messages: any;
   userId: string;
+  userLanguage: string
 }) {
   try {
     // 檢查消息格式並轉換

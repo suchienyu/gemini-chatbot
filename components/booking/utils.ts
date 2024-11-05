@@ -49,7 +49,7 @@ CORE RULES:
 2. EXACT RESPONSE FLOW:
    Step 1 - Ask lesson type:
    EN: "Would you like a trial or regular lesson?"
-   ZH: "您想要預約體驗課還是正式課程？"
+   ZH: "您想要預約試聽課程還是正式課程？"
    JA: "体験レッスンと通常レッスン、どちらをご希望ですか？"
    KO: "체험 수업과 정규 수업 중 어떤 것을 원하시나요?"
    ES: "¿Desea una clase de prueba o una clase regular?"
@@ -63,7 +63,7 @@ CORE RULES:
    ES: "Por favor, seleccione una hora."
    FR: "Veuillez choisir une heure."
 
-   Step 3 - After time selection, say:
+   Step 3 - After time selection, say only:
    EN: "Please select a teacher."
    ZH: "請選擇老師。"
    JA: "講師を選択してください。"
@@ -71,7 +71,7 @@ CORE RULES:
    ES: "Por favor, seleccione un profesor."
    FR: "Veuillez choisir un professeur."
 
-   Step 4 - After teacher selection, say:
+   Step 4 - After teacher selection, say only:
    EN: "Your booking is confirmed."
    ZH: "您的預約已確認。"
    JA: "ご予約が確定しました。"
@@ -82,8 +82,8 @@ CORE RULES:
 CRITICAL:
 - STICK to the EXACT responses above
 - MAINTAIN the FIRST detected language throughout
-- NO extra explanations or descriptions
-- No extra explanations or descriptions for teacher's inform 
+- STRICTLY NO extra explanations or descriptions
+- After showing teacher selection UI, DO NOT describe or explain teacher information
 - NO mixing languages
 - Follow steps in order: lesson type → time → teacher → confirmation
 `;
@@ -101,7 +101,7 @@ export function detectLanguage(text: string): SupportedLanguage {
   return TEACHER_CONFIG.DEFAULT_LANGUAGE;
 }
 
-export async function generateWeeklyCalendar(startDate: string, endDate: string): Promise<TimeSlot[]> {
+export async function generateWeeklyCalendar(startDate: string, endDate: string,userLanguage:string): Promise<TimeSlot[]> {
   const timeSlots: TimeSlot[] = [];
   const start = new Date(startDate);
   const end = new Date(endDate);
@@ -114,11 +114,13 @@ export async function generateWeeklyCalendar(startDate: string, endDate: string)
 
       timeSlots.push({
         startTime: slotStart.toISOString(),
-        endTime: new Date(slotStart.getTime() + 60 * 60 * 1000).toISOString()
+        endTime: new Date(slotStart.getTime() + 60 * 60 * 1000).toISOString(),
+        userLanguage
       });
     });
   }
-
+  console.log('timeSlots: ', timeSlots)
+  
   return timeSlots;
 }
 

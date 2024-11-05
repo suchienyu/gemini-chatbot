@@ -132,7 +132,7 @@ export async function POST(request: Request) {
           endDate: z.string().describe("End date in ISO format")
         }),
         execute: async ({ startDate, endDate }: { startDate: string; endDate: string }) => {
-          return generateWeeklyCalendar(startDate, endDate);
+          return generateWeeklyCalendar(startDate, endDate,userLanguage);
         }
       },
       checkTeacherAvailability: {
@@ -245,7 +245,8 @@ MAINTAIN_LANGUAGE: true
     if (session.user?.id) {
       await saveChat({
         id,
-        messages: coreMessages,
+        userLanguage,
+        messages: coreMessages.map(msg => ({ ...msg, globalUserLang: userLanguage})),
         userId: session.user.id,
       }).catch(error => {
         console.error("Failed to save chat", error);

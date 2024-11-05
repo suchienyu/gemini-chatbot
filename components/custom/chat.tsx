@@ -27,6 +27,8 @@ export function Chat({
         window.history.replaceState({}, "", `/chat/${id}`);
       },
     });
+    console.log('messages: ', messages)
+    // console.log('global userLanguage: ', userLanguage)
 
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
@@ -50,6 +52,7 @@ export function Chat({
               content={message.content}
               attachments={message.experimental_attachments}
               toolInvocations={message.toolInvocations}
+              messages={messages}
             />
           ))}
 

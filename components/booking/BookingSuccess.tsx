@@ -61,7 +61,7 @@ const bookingTranslations = {
   lessonTypeText: {
     trial: {
       en: 'Trial Lesson',
-      zh: '體驗課',
+      zh: '試聽課程',
       ja: '体験レッスン',
       ko: '체험 수업',
       es: 'Clase de Prueba',
@@ -211,7 +211,7 @@ export default function BookingSuccess({ booking, language, onClose }: BookingSu
 
         <div className="space-y-4 mb-6">
           <div className="flex justify-between items-center border-b pb-2">
-            <div>
+            <div className="text-left">
               <p className="text-sm text-gray-500">
                 {bookingTranslations.teacher[language]}
               </p>
@@ -220,7 +220,7 @@ export default function BookingSuccess({ booking, language, onClose }: BookingSu
           </div>
 
           <div className="flex justify-between items-center border-b pb-2">
-            <div>
+            <div className="text-left">
               <p className="text-sm text-gray-500">
                 {bookingTranslations.classTime[language]}
               </p>
@@ -231,7 +231,7 @@ export default function BookingSuccess({ booking, language, onClose }: BookingSu
           </div>
 
           <div className="flex justify-between items-center border-b pb-2">
-            <div>
+            <div className="text-left">
               <p className="text-sm text-gray-500">
                 {t.lessonType[language]}
               </p>

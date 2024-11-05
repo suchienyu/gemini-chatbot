@@ -21,7 +21,9 @@ export interface MessageProps {
   content: string | ReactNode;
   toolInvocations: Array<ToolInvocation> | undefined;
   attachments?: Array<Attachment>;
-  messages?: Array<ChatMessage>;
+  // messages?: Array<ChatMessage>;
+  messages?: any;
+
 }
 
 export interface ChatMessage {
@@ -69,13 +71,16 @@ export function Message({
 
     return 'en';
   };
-
+  console.log('in Message component ', messages)
   // 獲取用戶語言
   const [userLanguage, setUserLanguage] = useState<SupportedLanguage>('en');
 
   // 在組件載入時檢測語言
   useEffect(() => {
-    const firstUserMessage = messages.find(msg => msg.role === 'user')?.content || '';
+    console.log('~~~messages: ', messages)
+    const firstUserMessage = messages.find((msg: { role: string; }) => msg.role === 'user')?.content || '';
+    console.log('~~~firstUserMessage: ', firstUserMessage)
+    
     const detectedLanguage = detectLanguage(firstUserMessage);
     console.log('Detected language:', detectedLanguage);
     setUserLanguage(detectedLanguage);
@@ -125,7 +130,7 @@ export function Message({
 
     const { result, toolName } = toolInvocation;
     console.log('Tool invocation:', toolName, result);
-
+    console.log('result: ', result)
     switch (toolName) {
       case "generateCalendar":
         return (
@@ -137,7 +142,7 @@ export function Message({
                 content: getTimeSelectionMessage(time)
               });
             }}
-            language={userLanguage}
+            language={result[0].userLanguage}
           />
         );
 
@@ -157,6 +162,7 @@ export function Message({
         );
 
       case "createBooking":
+        console.log('createBooking result: ', result)
         if (!result) return null;
 
         const bookingData: BookingData = {

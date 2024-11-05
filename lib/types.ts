@@ -10,6 +10,7 @@ export const DEFAULT_LANGUAGE: SupportedLanguage = 'zh';
 export interface TimeSlot {
   startTime: string;
   endTime: string;
+  userLanguage: string;
 }
 export type ApiResponse<T> = {
   data: T;

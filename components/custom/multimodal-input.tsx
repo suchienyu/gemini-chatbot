@@ -21,9 +21,9 @@ import { Textarea } from "../ui/textarea";
 
 const suggestedActions = [
   {
-    title: "Help me book a flight",
-    label: "from San Francisco to London",
-    action: "Help me book a flight from San Francisco to London",
+    title: "我想要預約",
+    label: "課程",
+    action: "我想要預約課程",
   },
   {
     title: "What is the status",
