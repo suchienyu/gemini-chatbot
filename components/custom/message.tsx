@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction, useCallback } from "react";
 import { useChat } from "ai/react";
 import { Attachment, ToolInvocation } from "ai";
 import { motion } from "framer-motion";
@@ -11,8 +11,9 @@ import { PreviewAttachment } from "./preview-attachment";
 import WeeklyCalendar from "@/components/booking/WeeklyCalendar";
 import TeacherCard from "@/components/booking/TeacherCard";
 import BookingSuccess from "@/components/booking/BookingSuccess";
-import { Teacher } from "@/components/booking/TeacherCard";
-
+import PaymentFlow from "@/components/booking/Payment"
+import { BookingResponse, translations } from "@/lib/types";
+import { generateUUID } from "@/lib/utils";
 type SupportedLanguage = 'en' | 'zh' | 'ja' | 'ko' | 'es' | 'fr';
 
 export interface MessageProps {
@@ -34,6 +35,7 @@ export interface ChatMessage {
 }
 
 interface BookingData {
+  id: string;
   teacherName: string;
   lessonDateTime: string;
   lessonType: 'trial' | 'regular';
@@ -58,33 +60,37 @@ export function Message({
     maxSteps: 5,
   });
 
-  // 語言檢測
-  const detectLanguage = (text: string): SupportedLanguage => {
-    if (!text) return 'en';
+  const [userLanguage, setUserLanguage] = useState<SupportedLanguage>('en');
+  const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
+  const [paymentProcessed, setPaymentProcessed] = useState<boolean>(false);
+  const [processedBookingId, setProcessedBookingId] = useState<string | null>(null);
 
+  // 語言檢測
+  const detectLanguage = useCallback((text: string): SupportedLanguage => {
+    if (!text) return 'en';
     if (/^[a-zA-Z\s\d.,!?'"()-]+$/.test(text)) return 'en';
     if (/[\u4e00-\u9fff]/.test(text)) return 'zh';
     if (/[\u3040-\u309F\u30A0-\u30FF]/.test(text)) return 'ja';
     if (/[\uAC00-\uD7AF]/.test(text)) return 'ko';
     if (/[áéíóúüñ¿¡]/i.test(text)) return 'es';
     if (/[àâçéèêëîïôûùüÿœæ]/i.test(text)) return 'fr';
-
     return 'en';
-  };
+  }, []);
   console.log('in Message component ', messages)
   // 獲取用戶語言
-  const [userLanguage, setUserLanguage] = useState<SupportedLanguage>('en');
+
 
   // 在組件載入時檢測語言
   useEffect(() => {
     console.log('~~~messages: ', messages)
     const firstUserMessage = messages.find((msg: { role: string; }) => msg.role === 'user')?.content || '';
     console.log('~~~firstUserMessage: ', firstUserMessage)
-    
+
     const detectedLanguage = detectLanguage(firstUserMessage);
     console.log('Detected language:', detectedLanguage);
     setUserLanguage(detectedLanguage);
   }, [messages]);
+
 
   // 格式化日期時間
   const formatDateTime = (date: Date): string => {
@@ -124,8 +130,54 @@ export function Message({
     return messages[userLanguage];
   };
 
+  const handlePaymentSuccess = useCallback((bookingData: BookingResponse) => {
+    console.log('Payment success handler:', bookingData.id);
+    
+    setPaymentProcessed(true);
+    setProcessedBookingId(bookingData.id);
+    
+    append({
+      role: 'assistant',
+      content: translations[userLanguage].bookingConfirmed
+    });
+  }, [userLanguage, append]);
+
+  const createBookingResponse = useCallback((result: any, bookingId: string): BookingResponse => {
+    const isTrialLesson = result.lessonType === 'trial';
+    const isRegularAndPaid = result.lessonType === 'regular' && 
+                            bookingId === processedBookingId && 
+                            paymentProcessed;
+  
+    return {
+      id: bookingId,
+      teacherName: result.teacherName,
+      lessonDateTime: result.lessonDateTime,
+      lessonType: result.lessonType,
+      classroomLink: result.classroomLink,
+      status: 'success',
+      emailSent: isTrialLesson || isRegularAndPaid,
+      studentEmail: result.studentEmail,
+      studentName: result.studentName,
+      showBookingSuccess: isTrialLesson || isRegularAndPaid  // 加回這個屬性
+    };
+  }, [processedBookingId, paymentProcessed]);
+
+  useEffect(() => {
+    if (!toolInvocations) return;
+
+    const createBookingTool = toolInvocations.find(
+      tool => tool.state === "result" && tool.toolName === "createBooking"
+    );
+
+    if (createBookingTool?.state === "result" && createBookingTool.result) {
+      const bookingId = createBookingTool.result.id || generateUUID();
+      if (currentBookingId !== bookingId) {
+        setCurrentBookingId(bookingId);
+      }
+    }
+  }, [toolInvocations, currentBookingId]);
   // 處理工具調用結果
-  const renderToolResult = (toolInvocation: ToolInvocation) => {
+  const renderToolResult = useCallback((toolInvocation: ToolInvocation) => {
     if (toolInvocation.state !== "result") return null;
 
     const { result, toolName } = toolInvocation;
@@ -151,52 +203,102 @@ export function Message({
           <TeacherCard
             teachers={result}
             onSelect={(teacher) => {
+              // 只發送選擇老師的訊息
               append({
                 role: 'user',
-                content: getTeacherSelectionMessage(teacher.name)
+                content: getTeacherSelectionMessage(teacher.name),
               });
             }}
             selectedTime={result.selectedTime}
             language={userLanguage}
+            lessonType={result.lessonType}
           />
         );
 
-      case "createBooking":
-        console.log('createBooking result: ', result)
-        if (!result) return null;
-
-        const bookingData: BookingData = {
-          teacherName: result.teacherName,
-          lessonDateTime: result.lessonDateTime,
-          lessonType: result.lessonType,
-          classroomLink: result.classroomLink,
-          emailSent: result.emailSent,
-          studentEmail: result.studentEmail,
-          studentName: result.studentName
-        };
-
-        const handleClose = () => {
-          console.log('Booking dialog closed');
-          // 這裡可以添加任何需要的關閉處理邏輯
-        };
-
-        return (
-          <BookingSuccess
-            booking={{
-              teacherName: result.teacherName,
-              lessonDateTime: result.lessonDateTime,
-              lessonType: result.lessonType,
-              classroomLink: result.classroomLink
-            }}
-            language={userLanguage}
-          />
-        );
-
-      default:
-        return null;
+        case "createBooking": {
+          if (!result) return null;
+        
+          const bookingId = result.id || generateUUID();
+          const bookingData = createBookingResponse(result, bookingId);
+        
+          console.log('Booking Debug:', {
+            bookingId,
+            currentBookingId,
+            processedBookingId,
+            paymentProcessed,
+            lessonType: bookingData.lessonType
+          });
+        
+          // 試聽課程
+          if (bookingData.lessonType === 'trial') {
+            return (
+              <BookingSuccess
+                booking={bookingData}  // 不需要額外修改 booking 物件
+                language={userLanguage}
+                isPaymentSuccess={false}
+              />
+            );
+          }
+        
+          // 正式課程
+          if (bookingData.lessonType === 'regular') {
+            // 檢查是否已付款
+            if (paymentProcessed) {
+              console.log('Payment processed, showing success page');
+              const successBookingData = {
+                ...bookingData,
+                emailSent: true,
+                showBookingSuccess: true
+              };
+              
+              return (
+                <BookingSuccess
+                  booking={successBookingData}
+                  language={userLanguage}
+                  isPaymentSuccess={true}
+                />
+              );
+            }
+        
+            // 未付款，顯示付款流程
+            console.log('Showing payment flow');
+            return (
+              <PaymentFlow
+                bookingDetails={bookingData}
+                language={userLanguage}
+                onPaymentComplete={() => {
+                  console.log('Payment completing for:', bookingId);
+                  handlePaymentSuccess(bookingData);
+                }}
+                onBack={() => {
+                  setCurrentBookingId(null);
+                  setPaymentProcessed(false);
+                  append({
+                    role: 'user',
+                    content: translations[userLanguage].restartBooking
+                  });
+                }}
+              />
+            );
+          }
+        
+          return null;
+        }
+  
+        default:
+          return null;
     }
-  };
-
+  }, [
+    userLanguage,
+    currentBookingId,
+    processedBookingId,
+    paymentProcessed,
+    append,
+    getTimeSelectionMessage,
+    getTeacherSelectionMessage,
+    handlePaymentSuccess,
+    createBookingResponse
+  ]);
   return (
     <motion.div
       className="flex flex-row gap-4 px-4 w-full md:w-[500px] md:px-0 first-of-type:pt-20"
@@ -231,5 +333,4 @@ export function Message({
     </motion.div>
   );
 }
-
 export default Message;

@@ -16,6 +16,7 @@ export interface Teacher {
   languages: string[];
   yearsOfExperience: number;
   hourlyRate: number;
+  requirePayment?: boolean;
 }
 
 interface TeacherCardProps {
@@ -23,6 +24,7 @@ interface TeacherCardProps {
   onSelect: (teacher: Teacher) => void;
   selectedTime?: Date;
   language: SupportedLanguage;
+  lessonType: 'trial' | 'regular';
 }
 
 // 擴展翻譯內容
@@ -106,6 +108,14 @@ const translations = {
     ko: '자기소개',
     es: 'Introducción',
     fr: 'Introduction'
+  },
+  selectPaymentMethod: {
+    en: "Please select a payment method.",
+    zh: "請選擇付款方式。",
+    ja: "お支払い方法を選択してください。",
+    ko: "결제 방법을 선택해 주세요.",
+    es: "Por favor, seleccione un método de pago.",
+    fr: "Veuillez choisir un mode de paiement."
   }
 } as const;
 
@@ -123,7 +133,8 @@ export default function TeacherCard({
   teachers, 
   selectedTime, 
   onSelect,
-  language 
+  language,
+  lessonType 
 }: TeacherCardProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -134,6 +145,19 @@ export default function TeacherCard({
       </Card>
     );
   }
+
+  const handleTeacherSelect = () => {
+    if (lessonType === 'trial') {
+      // 試聽課程直接觸發選擇
+      onSelect(currentTeacher);
+    } else {
+      // 正式課程先顯示付款資訊
+      onSelect({
+        ...currentTeacher,
+        requirePayment: true  // 添加標記表示需要付款
+      });
+    }
+  };
 
   const currentTeacher = teachers[currentIndex];
 
@@ -285,8 +309,9 @@ export default function TeacherCard({
           </Button>
 
           <Button
-            onClick={() => onSelect(currentTeacher)}
-            className="bg-[#B48A84] text-white hover:bg-[#E3D1D1] px-6 rounded-full"
+            onClick={handleTeacherSelect}
+            //onClick={() => onSelect(currentTeacher)}
+            className="bg-[#C69B9B] text-white hover:bg-[#D4B5B5] px-6 rounded-full"
           >
             {translations.selectTeacher[language]}
           </Button>

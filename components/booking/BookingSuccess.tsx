@@ -15,6 +15,7 @@ interface BookingSuccessProps {
   };
   language: SupportedLanguage;
   onClose?: () => void;
+  isPaymentSuccess?: boolean;
 }
 
 const bookingTranslations = {
@@ -153,10 +154,42 @@ const bookingTranslations = {
     ko: '닫기',
     es: 'Cerrar',
     fr: 'Fermer'
+  },
+  paymentSuccess: {
+    en: 'Payment Successful!',
+    zh: '付款成功！',
+    ja: '支払い完了！',
+    ko: '결제 성공!',
+    es: '¡Pago Exitoso!',
+    fr: 'Paiement Réussi !'
+  },
+  paymentComplete: {
+    en: 'Your payment has been processed successfully',
+    zh: '您的付款已成功處理',
+    ja: 'お支払いが正常に処理されました',
+    ko: '결제가 성공적으로 처리되었습니다',
+    es: 'Su pago ha sido procesado exitosamente',
+    fr: 'Votre paiement a été traité avec succès'
+  },
+  bookingConfirmed: {
+    en: 'Your booking has been confirmed',
+    zh: '您的預約已確認',
+    ja: 'ご予約が確定しました',
+    ko: '예약이 확정되었습니다',
+    es: 'Su reserva ha sido confirmada',
+    fr: 'Votre réservation a été confirmée'
+  },
+  reviewDetails: {
+    en: 'Please review your booking details',
+    zh: '請確認您的預約詳情',
+    ja: '予約内容をご確認ください',
+    ko: '예약 정보를 확인해 주세요',
+    es: 'Por favor revise los detalles de su reserva',
+    fr: 'Veuillez vérifier les détails de votre réservation'
   }
 };
 
-export default function BookingSuccess({ booking, language, onClose }: BookingSuccessProps) {
+export default function BookingSuccess({ booking, language, onClose, isPaymentSuccess = false }: BookingSuccessProps) {
   console.log('Booking:', booking);
   console.log('Language:', language);
   console.log('Lesson type:', booking?.lessonType);
@@ -202,11 +235,19 @@ export default function BookingSuccess({ booking, language, onClose }: BookingSu
         </div>
 
         <h2 className="text-2xl font-semibold mb-2">
-          {bookingTranslations.title[language]}
+          {booking.lessonType === 'regular'
+            ? (isPaymentSuccess
+              ? bookingTranslations.paymentSuccess[language]
+              : bookingTranslations.reviewDetails[language])
+            : bookingTranslations.title[language]
+          }
         </h2>
 
         <p className="text-gray-600 mb-6">
-          {bookingTranslations.subtitle[language]}
+          {booking.lessonType === 'regular'
+            ? bookingTranslations.paymentComplete[language]  // 正式課程只顯示付款完成訊息
+            : bookingTranslations.subtitle[language]         // 試聽課程顯示一般的成功訊息
+          }
         </p>
 
         <div className="space-y-4 mb-6">
@@ -251,7 +292,7 @@ export default function BookingSuccess({ booking, language, onClose }: BookingSu
             </p>
             <div className="flex gap-2">
               <Button
-                className="flex-1"
+                className="flex-1 bg-[#F9E9E9] hover:bg-[#D4B5B5] text-pink-700"
                 onClick={() => window.open(booking.classroomLink, '_blank')}
               >
                 {bookingTranslations.enterClassroom[language]}
@@ -265,6 +306,32 @@ export default function BookingSuccess({ booking, language, onClose }: BookingSu
             </div>
           </div>
         )}
+        {/* 新增準備事項部分 */}
+      <div className="text-left mt-8">
+        <h3 className="text-lg font-medium mb-4">
+          {bookingTranslations.preparationTips[language]}
+        </h3>
+        <ul className="space-y-2">
+          {bookingTranslations.tips[language].map((tip, index) => (
+            <li key={index} className="flex items-start gap-2">
+              <Check className="h-5 w-5 text-pink-500 mt-0.5 flex-shrink-0" />
+              <span className="text-gray-600">{tip}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* 可以再加入一些溫馨提醒 */}
+      <div className="mt-6 p-4 bg-[#F9E9E9] rounded-lg">
+        <p className="text-sm text-pink-700">
+          {language === 'en' ? 'Remember to check your email for lesson confirmation and important details.' :
+           language === 'zh' ? '請記得查看您的電子信箱以獲取課程確認信和重要資訊。' :
+           language === 'ja' ? 'レッスン確認と重要な詳細についてメールをご確認ください。' :
+           language === 'ko' ? '수업 확인 및 중요 세부 사항에 대한 이메일을 확인해 주세요.' :
+           language === 'es' ? 'Recuerde revisar su correo electrónico para la confirmación de la clase y detalles importantes.' :
+           'Pensez à vérifier votre email pour la confirmation du cours et les détails importants.'}
+        </p>
+      </div>
       </div>
     </Card>
   );

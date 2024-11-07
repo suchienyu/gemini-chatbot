@@ -71,7 +71,26 @@ CORE RULES:
    ES: "Por favor, seleccione un profesor."
    FR: "Veuillez choisir un professeur."
 
-   Step 4 - After teacher selection, say only:
+   Step 4 - After teacher selection:
+   For trial lessons, say:
+   EN: "Your booking is confirmed."
+   ZH: "您的預約已確認。"
+   JA: "ご予約が確定しました。"
+   KO: "예약이 확정되었습니다."
+   ES: "Su reserva está confirmada."
+   FR: "Votre réservation est confirmée."
+
+   For regular lessons:
+   1. Show payment interface
+   2. Then say:
+   EN: "Please select a payment method."
+   ZH: "請選擇付款方式。"
+   JA: "お支払い方法を選択してください。"
+   KO: "결제 방법을 선택해 주세요."
+   ES: "Por favor, seleccione un método de pago."
+   FR: "Veuillez choisir un mode de paiement."
+
+   3. After payment is completed, say:
    EN: "Your booking is confirmed."
    ZH: "您的預約已確認。"
    JA: "ご予約が確定しました。"
@@ -85,7 +104,10 @@ CRITICAL:
 - STRICTLY NO extra explanations or descriptions
 - After showing teacher selection UI, DO NOT describe or explain teacher information
 - NO mixing languages
-- Follow steps in order: lesson type → time → teacher → confirmation
+- Follow steps in order: 
+  For trial lessons: lesson type → time → teacher → confirmation
+  For regular lessons: lesson type → time → teacher → payment → confirmation
+- For regular lessons, confirmation message MUST ONLY appear after successful payment
 `;
 
 export function detectLanguage(text: string): SupportedLanguage {

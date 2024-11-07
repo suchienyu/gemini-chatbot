@@ -84,6 +84,7 @@ export const BOOKING_CONFIG = {
 
 // 統一的翻譯系統
 export interface TranslationMessages {
+  restartBooking: string;
   bookingConfirmed: string;
   teacherSelected: string;
   timeSelected: string;
@@ -95,6 +96,7 @@ export interface TranslationMessages {
   noTeachers: string;
   trialLesson: string;
   regularLesson: string;
+  selectPaymentMethod: string;
 }
 
 export const translations: Record<SupportedLanguage, TranslationMessages> = {
@@ -109,7 +111,9 @@ export const translations: Record<SupportedLanguage, TranslationMessages> = {
     selectTeacher: "Select Teacher",
     noTeachers: "No teachers available",
     trialLesson: "Trial Lesson",
-    regularLesson: "Regular Lesson"
+    regularLesson: "Regular Lesson",
+    restartBooking: "Restart Booking",
+    selectPaymentMethod:"Please select a payment method."
   },
   zh: {
     bookingConfirmed: "您的預約已確認",
@@ -122,7 +126,9 @@ export const translations: Record<SupportedLanguage, TranslationMessages> = {
     selectTeacher: "選擇老師",
     noTeachers: "目前沒有可用的老師",
     trialLesson: "體驗課",
-    regularLesson: "正式課程"
+    regularLesson: "正式課程",
+    restartBooking: "重新預約",
+    selectPaymentMethod:"請選擇付款方式。"
   },
   ja: {
     bookingConfirmed: "ご予約が確定しました",
@@ -135,7 +141,9 @@ export const translations: Record<SupportedLanguage, TranslationMessages> = {
     selectTeacher: "講師を選択",
     noTeachers: "現在利用可能な講師がいません",
     trialLesson: "体験レッスン",
-    regularLesson: "通常レッスン"
+    regularLesson: "通常レッスン",
+    restartBooking: "再起動予約",
+    selectPaymentMethod:"お支払い方法を選択してください。"
   },
   ko: {
     bookingConfirmed: "예약이 확정되었습니다",
@@ -148,7 +156,9 @@ export const translations: Record<SupportedLanguage, TranslationMessages> = {
     selectTeacher: "선생님 선택",
     noTeachers: "현재 이용 가능한 선생님이 없습니다",
     trialLesson: "체험 수업",
-    regularLesson: "정규 수업"
+    regularLesson: "정규 수업",
+    restartBooking: "재시작예약",
+    selectPaymentMethod:"결제 방법을 선택해 주세요."
   },
   es: {
     bookingConfirmed: "Su reserva está confirmada",
@@ -161,7 +171,9 @@ export const translations: Record<SupportedLanguage, TranslationMessages> = {
     selectTeacher: "Seleccionar profesor",
     noTeachers: "No hay profesores disponibles",
     trialLesson: "Clase de prueba",
-    regularLesson: "Clase regular"
+    regularLesson: "Clase regular",
+    restartBooking: "reiniciarReserva",
+    selectPaymentMethod:"Por favor, seleccione un método de pago."
   },
   fr: {
     bookingConfirmed: "Votre réservation est confirmée",
@@ -174,7 +186,9 @@ export const translations: Record<SupportedLanguage, TranslationMessages> = {
     selectTeacher: "Choisir le professeur",
     noTeachers: "Aucun professeur disponible",
     trialLesson: "Leçon d'essai",
-    regularLesson: "Leçon régulière"
+    regularLesson: "Leçon régulière",
+    restartBooking: "redémarrerRéservation",
+    selectPaymentMethod:"Veuillez choisir un mode de paiement."
   }
 };
 
