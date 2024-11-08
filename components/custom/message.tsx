@@ -65,6 +65,32 @@ export function Message({
   const [paymentProcessed, setPaymentProcessed] = useState<boolean>(false);
   const [processedBookingId, setProcessedBookingId] = useState<string | null>(null);
 
+  const handleImageClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'IMG') {
+      if (!target.classList.contains('expanded')) {
+        // 放大圖片
+        const overlay = document.createElement('div');
+        overlay.className = 'image-overlay';
+        document.body.appendChild(overlay);
+        
+        const clonedImg = target.cloneNode(true) as HTMLElement;
+        clonedImg.classList.add('expanded');
+        overlay.appendChild(clonedImg);
+        
+        overlay.onclick = () => {
+          overlay.remove();
+        };
+      } else {
+        // 如果已經是放大狀態，點擊後移除
+        const overlay = target.closest('.image-overlay');
+        if (overlay) {
+          overlay.remove();
+        }
+      }
+    }
+  };
+
   // 語言檢測
   const detectLanguage = useCallback((text: string): SupportedLanguage => {
     if (!text) return 'en';
@@ -310,11 +336,78 @@ export function Message({
       </div>
 
       <div className="flex flex-col gap-2 w-full">
-        {content && typeof content === "string" && (
-          <div className="text-zinc-800 dark:text-zinc-300">
-            <Markdown>{content}</Markdown>
-          </div>
-        )}
+      {content && typeof content === "string" && (
+  <div 
+    className="text-zinc-800 dark:text-zinc-300 message-content"
+    onClick={handleImageClick}
+  >
+    <Markdown>{content}</Markdown>
+    <style jsx global>{`
+      .message-content {
+        position: relative;
+        width: 100%;
+      }
+
+      .message-content img {
+        max-width: 800px;
+        width: 100%;
+        height: auto;
+        display: block;
+        margin: 15px auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      
+      .message-content img:hover {
+        transform: scale(1.02);
+      }
+      
+      .message-content img.expanded {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 90vw;
+        max-height: 90vh;
+        z-index: 1001; /* 確保圖片在遮罩層上面 */
+        margin: 0;
+        object-fit: contain;
+        border-radius: 4px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      }
+      
+      .image-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: 1000;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      @media (max-width: 768px) {
+        .message-content img {
+          max-width: 100%;
+        }
+        
+        .message-content img.expanded {
+          width: 95vw;
+          height: auto;
+          max-height: 95vh;
+        }
+      }
+    `}</style>
+  </div>
+)}
 
         {toolInvocations && (
           <div className="flex flex-col gap-4">

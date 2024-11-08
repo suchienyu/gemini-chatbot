@@ -2,6 +2,8 @@ import { convertToCoreMessages, Message, streamText, ToolInvocation } from "ai";
 import { z } from "zod";
 import { openaiModel } from "@/ai";
 import { auth } from "@/app/(auth)/auth";
+import * as tf from '@tensorflow/tfjs';
+import * as use from '@tensorflow-models/universal-sentence-encoder';
 import { translate } from '@/lib/translation';
 import {
   createBooking,
@@ -23,8 +25,9 @@ import {
   Teacher,
   SupportedLanguage
 } from '@/lib/types';
-//import { formatBookingMessage } from '@/lib/booking-messages';
 
+let isTfInitialized = false;
+let model: use.UniversalSentenceEncoder | null = null;
 interface ChatMessage {
   id: string;
   role: 'user' | 'assistant' | 'system';
@@ -52,6 +55,97 @@ function getFirstUserMessage(messages: ChatMessage[]): string {
   return messages.find(
     (message: ChatMessage) => message.role === 'user'
   )?.content || '';
+}
+
+async function initializeTfAndModel() {
+  if (!model) {
+    try {
+      // 使用純瀏覽器版本
+      await tf.setBackend('cpu');
+      model = await use.load();
+      console.log('Model loaded successfully');
+    } catch (error) {
+      console.error('Error loading model:', error);
+      throw new Error('Failed to load model');
+    }
+  }
+  return model;
+}
+
+async function getInformation({ query, language }: { query: string; language: string }) {
+  try {
+    // 確保 TensorFlow 和模型已初始化
+    const useModel = await initializeTfAndModel();
+    
+    console.log('Generating query embedding...');
+    const queryEmbedding = await useModel.embed(query);
+    const queryVector = await queryEmbedding.array();
+    console.log('Query vector generated:', queryVector[0]);
+
+    const apiDomain = process.env.NEXT_PUBLIC_API_DOMAIN || 'localhost';
+    const apiUrl = `http://${apiDomain}:3002/api/chat`;
+    console.log('Attempting to fetch from:', apiUrl);
+
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messages: [
+          {
+            role: 'user',
+            content: query,
+            language: language
+          }
+        ],
+        queryVector: Array.from(queryVector[0])
+      }),
+    });
+
+    //const result = await response.json();
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    console.log('Fetch response received');
+    const result = await response.json();
+    console.log('Response parsed:', result);
+    return {
+      type: 'tool-result',
+      toolName: 'getInformation',
+      result: result.response || "No specific information found in the database."
+    };
+  } catch (error) {
+    console.error('Error details:', {
+      error,
+      apiDomain: process.env.NEXT_PUBLIC_API_DOMAIN,
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+
+    // 根據錯誤類型返回不同的錯誤訊息
+    if (error instanceof TypeError && error.message.includes('fetch failed')) {
+      return {
+        type: 'tool-result',
+        toolName: 'getInformation',
+        result: `無法連接到 FAQ 服務器。請確認服務器是否正在運行。(${process.env.NEXT_PUBLIC_API_DOMAIN}:3002)`
+      };
+    }
+
+    if (error instanceof Error && error.message.includes('HTTP error')) {
+      return {
+        type: 'tool-result',
+        toolName: 'getInformation',
+        result: "服務器返回錯誤，請稍後再試。"
+      };
+    }
+
+    return {
+      type: 'tool-result',
+      toolName: 'getInformation',
+      result: "搜尋過程中發生錯誤，請稍後再試。"
+    };
+  }
 }
 
 export async function POST(request: Request) {
@@ -125,6 +219,20 @@ export async function POST(request: Request) {
 
     // AI 工具定義
     const tools = {
+      getInformation: {
+        description: 'Search for relevant information in the database',
+        parameters: z.object({
+          query: z.string().describe('The search query'),
+        }),
+        execute: async function({ query }: { query: string }) {
+          console.log('Executing getInformation tool with query:', query);
+      const userLanguage = detectLanguage(query);
+      console.log('Detected language:', userLanguage);
+      const result = await getInformation({ query, language: userLanguage });
+      console.log('getInformation result:', result);
+      return result;
+        }
+      },
       generateCalendar: {
         description: "Generate available time slots",
         parameters: z.object({
