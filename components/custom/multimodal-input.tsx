@@ -1,7 +1,4 @@
 "use client";
-
-import { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai";
-import { motion } from "framer-motion";
 import React, {
   useRef,
   useEffect,
@@ -11,6 +8,9 @@ import React, {
   SetStateAction,
   ChangeEvent,
 } from "react";
+
+import { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 
 import { ArrowUpIcon, PaperclipIcon, StopIcon } from "./icons";
@@ -21,9 +21,9 @@ import { Textarea } from "../ui/textarea";
 
 const suggestedActions = [
   {
-    title: "我想要預約",
-    label: "課程",
-    action: "我想要預約課程",
+    title: "Help me book a flight",
+    label: "from San Francisco to London",
+    action: "Help me book a flight from San Francisco to London",
   },
   {
     title: "What is the status",

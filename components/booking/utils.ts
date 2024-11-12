@@ -1,5 +1,6 @@
-import { TimeSlot, SupportedLanguage } from '@/lib/types';
 import { TEACHER_CONFIG } from '@/data/teachers';
+import { TimeSlot, SupportedLanguage } from '@/lib/types';
+
 
 const dateTimeFormats = {
   en: {

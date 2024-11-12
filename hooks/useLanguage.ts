@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Language, DEFAULT_LANGUAGE, getTranslation } from '@/lib/utils';
+import { Language, DEFAULT_LANGUAGE, getTranslation, TranslationKey } from '@/lib/utils';
 
 export function useLanguage() {
   const [language, setLanguage] = useState<Language>(DEFAULT_LANGUAGE);
@@ -10,7 +10,10 @@ export function useLanguage() {
   useEffect(() => {
     const savedLanguage = localStorage.getItem('language') as Language;
     const browserLanguage = navigator.language.split('-')[0] as Language;
-    
+    const storedLanguage = localStorage.getItem('language') as Language;
+    if (storedLanguage) {
+      setLanguage(storedLanguage);
+    }
     if (savedLanguage && (savedLanguage === 'zh' || savedLanguage === 'en')) {
       setLanguage(savedLanguage);
     } else if (browserLanguage === 'zh' || browserLanguage === 'en') {
@@ -23,7 +26,7 @@ export function useLanguage() {
     localStorage.setItem('language', newLanguage);
   };
 
-  const t = (key: string, params: Record<string, string> = {}) => {
+  const t = (key:TranslationKey, params: Record<string, string> = {}) => {
     return getTranslation(language, key, params);
   };
 

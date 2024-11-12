@@ -1,11 +1,11 @@
 "use client";
+import { useEffect, useState } from "react";
 
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import cx from "classnames";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { User } from "next-auth";
-import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
 
@@ -67,22 +67,30 @@ export const History = ({ user }: { user: User | undefined }) => {
   const handleDelete = async () => {
     const deletePromise = fetch(`/api/chat?id=${deleteId}`, {
       method: "DELETE",
+    }).then(async (res) => {
+      if (!res.ok) {
+        throw new Error("Failed to delete chat");
+      }
     });
-
+  
     toast.promise(deletePromise, {
       loading: "Deleting chat...",
       success: () => {
-        mutate((history) => {
-          if (history) {
-            return history.filter((h) => h.id !== id);
-          }
-        });
+        // 更新本地數據
+        mutate(
+          (history) => history?.filter((h) => h.id !== deleteId),
+          { revalidate: false }
+        );
         return "Chat deleted successfully";
       },
       error: "Failed to delete chat",
     });
-
+  
     setShowDeleteDialog(false);
+    // 如果當前正在查看被刪除的聊天，則導航到首頁
+    if (deleteId === id) {
+      window.location.href = '/';
+    }
   };
 
   return (

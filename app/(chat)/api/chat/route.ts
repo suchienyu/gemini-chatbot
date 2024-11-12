@@ -1,20 +1,24 @@
-import { convertToCoreMessages, Message, streamText, ToolInvocation } from "ai";
-import { z } from "zod";
-import { openaiModel } from "@/ai";
-import { auth } from "@/app/(auth)/auth";
 import * as tf from '@tensorflow/tfjs';
 import * as use from '@tensorflow-models/universal-sentence-encoder';
-import { translate } from '@/lib/translation';
+import { convertToCoreMessages, Message, streamText, ToolInvocation } from "ai";
+import { eq } from "drizzle-orm";
+import { NextResponse } from "next/server";
+import { Session } from "next-auth";
+import { z } from "zod";
+
+import { openaiModel } from "@/ai";
+import { auth } from "@/app/(auth)/auth";
+import { SYSTEM_PROMPT, detectLanguage, generateWeeklyCalendar, generateClassroomLink } from '@/components/booking/utils';
+import { generateMockTeachers, TEACHER_CONFIG } from '@/data/teachers';
 import {
   createBooking,
   deleteChatById,
   getChatById,
+  db,
   saveChat,
   sendConfirmationEmail
 } from "@/db/queries";
-import { generateUUID } from "@/lib/utils";
-import { generateMockTeachers, TEACHER_CONFIG } from '@/data/teachers';
-import { SYSTEM_PROMPT, detectLanguage, generateWeeklyCalendar, generateClassroomLink } from '@/components/booking/utils';
+import { chat } from "@/db/schema";
 import {
   ApiResponse,
   ConfirmationEmailData,
@@ -25,6 +29,8 @@ import {
   Teacher,
   SupportedLanguage
 } from '@/lib/types';
+import { generateUUID } from "@/lib/utils";
+
 
 let isTfInitialized = false;
 let model: use.UniversalSentenceEncoder | null = null;
@@ -145,6 +151,35 @@ async function getInformation({ query, language }: { query: string; language: st
       toolName: 'getInformation',
       result: "搜尋過程中發生錯誤，請稍後再試。"
     };
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    // 指定 Session 型別
+    const session = await auth() as Session | null;
+    
+    // 檢查用戶，確保正確的型別
+    if (!session || !session.user) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return new NextResponse("Chat ID is required", { status: 400 });
+    }
+
+    // 加入用戶 ID 檢查，確保只能刪除自己的聊天記錄
+    await db.delete(chat).where(
+      eq(chat.id, id)
+    );
+
+    return new NextResponse(null, { status: 200 });
+  } catch (error) {
+    console.error("Error deleting chat:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
 
@@ -375,4 +410,8 @@ MAINTAIN_LANGUAGE: true
       { status: 500 }
     );
   }
+}
+
+function getServerSession() {
+  throw new Error("Function not implemented.");
 }

@@ -1,7 +1,10 @@
 import { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+
 import { ChevronLeft, ChevronRight, Video, Mail } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+
 
 type SupportedLanguage = 'en' | 'zh' | 'ja' | 'ko' | 'es' | 'fr';
 
@@ -211,7 +214,7 @@ export default function TeacherCard({
               <img
                 src={currentTeacher.profileImageUrl}
                 alt={currentTeacher.name}
-                className="w-full h-full object-cover rounded-lg"
+                className="size-full object-cover rounded-lg"
               />
             </div>
             
@@ -280,7 +283,7 @@ export default function TeacherCard({
                   className="flex items-center gap-1"
                   onClick={() => window.open(currentTeacher.videoUrl, '_blank')}
                 >
-                  <Video className="h-4 w-4" />
+                  <Video className="size-4" />
                   {translations.watchVideo[language]}
                 </Button>
                 <Button
@@ -289,7 +292,7 @@ export default function TeacherCard({
                   className="flex items-center gap-1"
                   onClick={() => window.open(`mailto:${currentTeacher.email}`)}
                 >
-                  <Mail className="h-4 w-4" />
+                  <Mail className="size-4" />
                   {translations.emailTeacher[language]}
                 </Button>
               </div>
@@ -298,14 +301,14 @@ export default function TeacherCard({
         </div>
 
         {/* 導航和選擇按鈕 */}
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-4">
+        <div className="absolute bottom-4 inset-x-0 flex justify-center gap-4">
           <Button
             variant="outline"
             size="icon"
             onClick={handlePrevious}
             className="rounded-full bg-white shadow-lg hover:bg-gray-50"
           >
-            <ChevronLeft className="h-6 w-6" />
+            <ChevronLeft className="size-6" />
           </Button>
 
           <Button
@@ -322,7 +325,7 @@ export default function TeacherCard({
             onClick={handleNext}
             className="rounded-full bg-white shadow-lg hover:bg-gray-50"
           >
-            <ChevronRight className="h-6 w-6" />
+            <ChevronRight className="size-6" />
           </Button>
         </div>
       </Card>

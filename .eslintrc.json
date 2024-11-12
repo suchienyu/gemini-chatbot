@@ -10,6 +10,11 @@
   "rules": {
     "tailwindcss/no-custom-classname": "off",
     "tailwindcss/classnames-order": "off",
+    "tailwindcss/enforces-shorthand": "warn",
+    "tailwindcss/migration-from-tailwind-2": "warn",
+    "@next/next/no-img-element": "warn",
+    "import/no-duplicates": "warn",
+    "react-hooks/exhaustive-deps": "warn",
     "import/order": [
       "error",
       {
@@ -22,6 +27,19 @@
           "object",
           "type"
         ],
+        "pathGroups": [
+          {
+            "pattern": "react",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "@/**",
+            "group": "internal",
+            "position": "before"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["react"],
         "newlines-between": "always",
         "alphabetize": {
           "order": "asc",
@@ -35,7 +53,10 @@
       "typescript": {
         "alwaysTryTypes": true
       }
+    },
+    "tailwindcss": {
+      "callees": ["cn", "clsx", "twMerge"]
     }
   },
-  "ignorePatterns": ["**/components/ui/**"]
+  "ignorePatterns": ["**/components/ui/**", "**/*.js", "**/*.mjs", "**/*.cjs"]
 }

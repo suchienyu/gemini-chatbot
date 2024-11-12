@@ -1,7 +1,9 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+
 import { Check } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 type SupportedLanguage = 'en' | 'zh' | 'ja' | 'ko' | 'es' | 'fr';
 type LessonType = 'trial' | 'regular';
@@ -230,8 +232,8 @@ export default function BookingSuccess({ booking, language, onClose, isPaymentSu
   return (
     <Card className="p-6 w-full max-w-xl mx-auto bg-white">
       <div className="text-center">
-        <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-          <Check className="h-6 w-6 text-green-600" />
+        <div className="mx-auto flex items-center justify-center size-12 rounded-full bg-green-100 mb-4">
+          <Check className="size-6 text-green-600" />
         </div>
 
         <h2 className="text-2xl font-semibold mb-2">
@@ -314,7 +316,7 @@ export default function BookingSuccess({ booking, language, onClose, isPaymentSu
         <ul className="space-y-2">
           {bookingTranslations.tips[language].map((tip, index) => (
             <li key={index} className="flex items-start gap-2">
-              <Check className="h-5 w-5 text-pink-500 mt-0.5 flex-shrink-0" />
+              <Check className="size-5 text-pink-500 mt-0.5 shrink-0" />
               <span className="text-gray-600">{tip}</span>
             </li>
           ))}

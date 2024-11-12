@@ -1,7 +1,8 @@
 // types.ts
-import { Chat } from "@/db/schema";
 import { CoreMessage, CoreToolMessage, Message } from "ai";
 import { ClassValue } from "clsx";
+
+import { Chat } from "@/db/schema";
 // 基礎類型定義
 export type SupportedLanguage = 'en' | 'zh' | 'ja' | 'ko' | 'es' | 'fr';
 export const DEFAULT_LANGUAGE: SupportedLanguage = 'zh';
@@ -97,6 +98,7 @@ export interface TranslationMessages {
   trialLesson: string;
   regularLesson: string;
   selectPaymentMethod: string;
+  
 }
 
 export const translations: Record<SupportedLanguage, TranslationMessages> = {

@@ -1,8 +1,10 @@
 import { useState } from 'react';
+
 import { format, startOfWeek, addDays } from 'date-fns';
 import { Locale,enUS, zhTW,ja, ko, es, fr } from 'date-fns/locale';
-import { Card } from '@/components/ui/card';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+import { Card } from '@/components/ui/card';
 import { SupportedLanguage } from '@/lib/types';
 
 interface WeeklyCalendarProps {
@@ -73,7 +75,7 @@ const WeeklyCalendar = ({ availableSlots = [], onSelectTime, language }: WeeklyC
           onClick={() => setCurrentWeek(prev => addDays(prev, -7))}
           className="cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors"
         >
-          <ChevronLeft className="h-5 w-5 text-gray-500" />
+          <ChevronLeft className="size-5 text-gray-500" />
         </div>
         
         <h3 className="text-xl font-semibold text-gray-800">
@@ -86,7 +88,7 @@ const WeeklyCalendar = ({ availableSlots = [], onSelectTime, language }: WeeklyC
           onClick={() => setCurrentWeek(prev => addDays(prev, 7))}
           className="cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors"
         >
-          <ChevronRight className="h-5 w-5 text-gray-500" />
+          <ChevronRight className="size-5 text-gray-500" />
         </div>
       </div>
 
