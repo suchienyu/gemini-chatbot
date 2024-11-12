@@ -27,6 +27,8 @@ const nextConfig = {
   images: {
     remotePatterns: [],
   },
+  trustHost: true,
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default nextConfig;
