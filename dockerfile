@@ -1,55 +1,56 @@
-# 基礎映像
-FROM node:18.18.0-slim AS base
+# syntax=docker.io/docker/dockerfile:1
 
-# 安裝 pnpm
-RUN npm install -g pnpm@8.6.3
+FROM node:20-alpine AS base
 
-# 安裝依賴
+# Install dependencies only when needed
 FROM base AS deps
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-dev \
-    python3-pip \
-    && rm -rf /var/lib/apt/lists/* \
-    curl
-
+# Install necessary build tools and Python
+RUN apk add --no-cache libc6-compat python3 make g++ gcc python3-dev \
+    && ln -sf python3 /usr/bin/python
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
-# 重新構建 TensorFlow.js
-RUN npm rebuild @tensorflow/tfjs-node --build-from-source
 
-# 構建階段
+# Enable pnpm
+RUN corepack enable pnpm
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
+RUN corepack enable pnpm
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-
-
-# 構建應用
-ENV NEXT_TELEMETRY_DISABLED 1
+# Build the project
 RUN pnpm run build
 
-# 生產階段
+# Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
-ENV TF_CPP_MIN_LOG_LEVEL 2
 
-RUN groupadd -r nodejs && useradd -r -g nodejs nextjs
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
-# 複製必要文件並設置權限
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
+
+# Set the correct permission for prerender cache
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+# Automatically leverage output traces to reduce image size
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder /app/node_modules ./node_modules
 
 USER nextjs
 
 EXPOSE 3000
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
-CMD ["pnpm", "run", "start"]
+
+CMD ["node", "server.js"]

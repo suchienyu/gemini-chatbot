@@ -131,7 +131,7 @@ const WeeklyCalendar = ({ availableSlots = [], onSelectTime, language }: WeeklyC
                     h-12 w-11 mb-2 rounded-lg flex items-center justify-center
                     text-sm font-medium transition-all duration-200
                     ${isAvailable 
-                      ? 'bg-[#F2E5E4] text-[#B48A84] hover:bg-[#E3D1D1]' 
+                      ? ' text-green-800 bg-[#E3F4EA] hover:bg-[#D1EDE0]' 
                       : 'bg-gray-100 text-gray-400 cursor-not-allowed'}
                   `}
                   disabled={!isAvailable} // 禁用不可用的按钮

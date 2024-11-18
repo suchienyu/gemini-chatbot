@@ -21,14 +21,24 @@ import { Textarea } from "../ui/textarea";
 
 const suggestedActions = [
   {
-    title: "Help me book a flight",
-    label: "from San Francisco to London",
-    action: "Help me book a flight from San Francisco to London",
+    title: "關於教師",
+    label: "如何選擇教師？",
+    action: "如何選擇教師？",
   },
   {
-    title: "What is the status",
-    label: "of flight BA142 flying tmrw?",
-    action: "What is the status of flight BA142 flying tmrw?",
+    title: "關於課程",
+    label: "如何重新安排或取消我的課程？",
+    action: "如何重新安排或取消我的課程？",
+  },
+  {
+    title: "關於線上教室?",
+    label: "怎麼進入線上教室?",
+    action: "怎麼進入線上教室?",
+  },
+  {
+    title: "預約課程",
+    label: "試聽課程或正式課程",
+    action: "預約課程",
   },
 ];
 
@@ -97,47 +107,49 @@ export function MultimodalInput({
     }
   }, [attachments, handleSubmit, setAttachments, width]);
 
-  const uploadFile = async (file: File) => {
+  const uploadFile = async (file: File): Promise<Attachment | undefined> => {
     const formData = new FormData();
     formData.append("file", file);
-
+  
     try {
       const response = await fetch(`/api/files/upload`, {
         method: "POST",
         body: formData,
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         const { url, pathname, contentType } = data;
-
+  
         return {
           url,
           name: pathname,
           contentType: contentType,
-        };
+        } as Attachment;  // 明確指定返回類型為 Attachment
       } else {
         const { error } = await response.json();
         toast.error(error);
+        return undefined;
       }
     } catch (error) {
       toast.error("Failed to upload file, please try again!");
+      return undefined;
     }
   };
-
+  
   const handleFileChange = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(event.target.files || []);
-
+  
       setUploadQueue(files.map((file) => file.name));
-
+  
       try {
         const uploadPromises = files.map((file) => uploadFile(file));
         const uploadedAttachments = await Promise.all(uploadPromises);
         const successfullyUploadedAttachments = uploadedAttachments.filter(
-          (attachment) => attachment !== undefined,
+          (attachment): attachment is Attachment => attachment !== undefined
         );
-
+  
         setAttachments((currentAttachments) => [
           ...currentAttachments,
           ...successfullyUploadedAttachments,
@@ -168,12 +180,18 @@ export function MultimodalInput({
               >
                 <button
                   onClick={async () => {
-                    append({
+                    // 先觸發點擊事件
+                    await append({
                       role: "user",
                       content: suggestedAction.action,
                     });
+                    
+                    // 觸發表單提交以確保完整的回應處理
+                    handleSubmit(undefined, {
+                      experimental_attachments: attachments,
+                    });
                   }}
-                  className="border-none bg-muted/50 w-full text-left border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 rounded-lg p-3 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
+                  className="border-none bg-muted/100 w-full text-left border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 rounded-lg p-3 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
                 >
                   <span className="font-medium">{suggestedAction.title}</span>
                   <span className="text-zinc-500 dark:text-zinc-400">

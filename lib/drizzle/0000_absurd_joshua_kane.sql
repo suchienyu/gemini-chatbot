@@ -14,9 +14,12 @@ CREATE TABLE IF NOT EXISTS "Reservation" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "User" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"email" varchar(64) NOT NULL,
-	"password" varchar(64)
+   "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+   "email" varchar(64) NOT NULL,
+   "password" varchar(64),
+   "name" text,
+   "emailVerified" timestamp,
+   "image" text
 );
 --> statement-breakpoint
 DO $$ BEGIN

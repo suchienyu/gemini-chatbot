@@ -294,7 +294,7 @@ export default function BookingSuccess({ booking, language, onClose, isPaymentSu
             </p>
             <div className="flex gap-2">
               <Button
-                className="flex-1 bg-[#F9E9E9] hover:bg-[#D4B5B5] text-pink-700"
+                className="flex-1 bg-[#E3F4EA] hover:bg-[#D1EDE0] text-black"
                 onClick={() => window.open(booking.classroomLink, '_blank')}
               >
                 {bookingTranslations.enterClassroom[language]}
@@ -316,7 +316,7 @@ export default function BookingSuccess({ booking, language, onClose, isPaymentSu
         <ul className="space-y-2">
           {bookingTranslations.tips[language].map((tip, index) => (
             <li key={index} className="flex items-start gap-2">
-              <Check className="size-5 text-pink-500 mt-0.5 shrink-0" />
+              <Check className="size-5 text-green-500 mt-0.5 shrink-0" />
               <span className="text-gray-600">{tip}</span>
             </li>
           ))}
@@ -324,8 +324,8 @@ export default function BookingSuccess({ booking, language, onClose, isPaymentSu
       </div>
 
       {/* 可以再加入一些溫馨提醒 */}
-      <div className="mt-6 p-4 bg-[#F9E9E9] rounded-lg">
-        <p className="text-sm text-pink-700">
+      <div className="mt-6 p-4 bg-[#E3F4EA] rounded-lg">
+        <p className="text-sm text-green-810">
           {language === 'en' ? 'Remember to check your email for lesson confirmation and important details.' :
            language === 'zh' ? '請記得查看您的電子信箱以獲取課程確認信和重要資訊。' :
            language === 'ja' ? 'レッスン確認と重要な詳細についてメールをご確認ください。' :

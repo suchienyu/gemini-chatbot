@@ -190,7 +190,7 @@ const PaymentFlow = ({
     <div className="space-y-6 ">
       <div className="space-y-4 ">
         <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-zinc-800 rounded-lg">
-          <Clock className="text-pink-500" size={20} />
+          <Clock className="text-green-500" size={20} />
           <div>
             <div className="text-sm text-gray-500">{translations.dateTime[language]}</div>
             <div>{bookingDetails.lessonDateTime}</div>
@@ -198,7 +198,7 @@ const PaymentFlow = ({
         </div>
   
         <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-zinc-800 rounded-lg">
-          <User className="text-pink-500" size={20} />
+          <User className="text-green-500" size={20} />
           <div>
             <div className="text-sm text-gray-500">{translations.teacher[language]}</div>
             <div>{bookingDetails.teacherName}</div>
@@ -215,7 +215,7 @@ const PaymentFlow = ({
         </button>
         <button
           onClick={() => setStep('method-selection')}
-          className="flex-1 px-4 py-2 bg-[#B48A84] text-white hover:bg-[#C69B9B] rounded-md "
+          className="flex-1 px-4 py-2 bg-[#C5E5D3] text-black hover:bg-[#E3F4EA] rounded-md "
         >
           {translations.proceedToPayment[language]}
         </button>
@@ -227,17 +227,17 @@ const PaymentFlow = ({
     <div className="space-y-4">
       <button
         onClick={() => handlePaymentMethod('credit-card')}
-        className="w-full flex items-center gap-3 p-4 border bg-white rounded-lg hover:bg-[#D4B5B5]"
+        className="w-full flex items-center gap-3 p-4 border bg-white rounded-lg hover:bg-[#C5E5D3]"
       >
-        <CreditCard className="text-pink-500 " size={24} />
+        <CreditCard className="text-green-500 " size={24} />
         <span>{translations.creditCard[language]}</span>
       </button>
 
       <button
         onClick={() => handlePaymentMethod('bank-transfer')}
-        className="w-full flex items-center gap-3 p-4 border bg-white rounded-lg hover:bg-[#D4B5B5]"
+        className="w-full flex items-center gap-3 p-4 border bg-white rounded-lg hover:bg-[#C5E5D3]"
       >
-        <Building className="text-pink-500" size={24} />
+        <Building className="text-green-500" size={24} />
         <span>{translations.bankTransfer[language]}</span>
       </button>
     </div>
@@ -292,7 +292,7 @@ const PaymentFlow = ({
       <button
         type="submit"
         disabled={isProcessing}
-        className="w-full px-4 py-2 bg-[#B48A84] text-white hover:bg-[#C69B9B] rounded-md  disabled:opacity-50"
+        className="w-full px-4 py-2 bg-[#E3F4EA] text-white hover:bg-[#C5E5D3] rounded-md  disabled:opacity-50"
       >
         {isProcessing ? translations.processing[language] : translations.confirmPayment[language]}
       </button>
@@ -315,7 +315,7 @@ const PaymentFlow = ({
 
       <button
         onClick={handleBankTransferComplete}
-        className="w-full px-4 py-2 bg-[#B48A84] text-white hover:bg-[#C69B9B]  rounded-md"
+        className="w-full px-4 py-2 bg-[#E3F4EA] text-black hover:bg-[#C5E5D3]  rounded-md"
         disabled={isProcessing}
       >
         {isProcessing ? translations.processing[language] : t('bookingConfirmed')}
@@ -325,7 +325,7 @@ const PaymentFlow = ({
 
   return (
     <motion.div
-      className="w-full max-w-md mx-auto bg-[#E3D1D1] dark:bg-zinc-900 rounded-lg shadow-lg p-6"
+      className="w-full max-w-md mx-auto bg-[#8AC79F] dark:bg-zinc-900 rounded-lg shadow-lg p-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >

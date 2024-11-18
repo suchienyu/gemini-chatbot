@@ -314,7 +314,7 @@ export default function TeacherCard({
           <Button
             onClick={handleTeacherSelect}
             //onClick={() => onSelect(currentTeacher)}
-            className="bg-[#C69B9B] text-white hover:bg-[#D4B5B5] px-6 rounded-full"
+            className="bg-[#C5E5D3] hover:bg-[#D1EDE0] text-black px-6 rounded-full"
           >
             {translations.selectTeacher[language]}
           </Button>

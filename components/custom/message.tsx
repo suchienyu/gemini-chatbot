@@ -65,6 +65,43 @@ export function Message({
   const [paymentProcessed, setPaymentProcessed] = useState<boolean>(false);
   const [processedBookingId, setProcessedBookingId] = useState<string | null>(null);
 
+  const processMarkdownContent = (content: string) => {
+    console.log("Original content:", content);
+    
+    if (typeof content !== 'string') return content;
+  
+    // 首先處理字串串接
+    let cleanContent = content
+      .replace(/'\s*\+\s*'/g, '') // 移除 ' + ' 的模式
+      .replace(/\\n/g, '\n')      // 處理換行符
+      .replace(/['"]\s*\+\s*['"]/g, ''); // 移除引號之間的 +
+  
+    console.log("After cleaning:", cleanContent);
+  
+    // 分割成行並處理
+    const lines = cleanContent.split('\n');
+    const processedLines = lines.map(line => {
+      // 移除多餘的引號
+      line = line.replace(/^['"]|['"]$/g, '');
+      
+      // 如果是圖片標記，確保格式正確
+      if (line.includes('![') && line.includes('](') && line.includes(')')) {
+        const imgMatch = line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
+        if (imgMatch) {
+          return `![${imgMatch[1]}](${imgMatch[2]})`;
+        }
+      }
+      return line.trim();
+    });
+  
+    const result = processedLines
+      .filter(line => line) // 移除空行
+      .join('\n\n');
+  
+    console.log("Final processed content:", result);
+    return result;
+  };
+
   const handleImageClick = (event: React.MouseEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement;
     if (target.tagName === 'IMG') {
@@ -72,11 +109,11 @@ export function Message({
         const overlay = document.createElement('div');
         overlay.className = 'image-overlay';
         document.body.appendChild(overlay);
-        
+
         const clonedImg = target.cloneNode(true) as HTMLElement;
         clonedImg.classList.add('expanded');
         overlay.appendChild(clonedImg);
-        
+
         overlay.onclick = () => {
           overlay.remove();
         };
@@ -115,7 +152,7 @@ export function Message({
       es: 'es-ES',
       fr: 'fr-FR'
     } as const;
-  
+
     return date.toLocaleString(locales[userLanguage]);
   }, [userLanguage]);
 
@@ -146,7 +183,7 @@ export function Message({
   const handlePaymentSuccess = useCallback((bookingData: BookingResponse) => {
     setPaymentProcessed(true);
     setProcessedBookingId(bookingData.id);
-    
+
     append({
       role: 'assistant',
       content: translations[userLanguage].bookingConfirmed
@@ -155,10 +192,10 @@ export function Message({
 
   const createBookingResponse = useCallback((result: any, bookingId: string): BookingResponse => {
     const isTrialLesson = result.lessonType === 'trial';
-    const isRegularAndPaid = result.lessonType === 'regular' && 
-                            bookingId === processedBookingId && 
-                            paymentProcessed;
-  
+    const isRegularAndPaid = result.lessonType === 'regular' &&
+      bookingId === processedBookingId &&
+      paymentProcessed;
+
     return {
       id: bookingId,
       teacherName: result.teacherName,
@@ -226,10 +263,10 @@ export function Message({
 
       case "createBooking": {
         if (!result) return null;
-      
+
         const bookingId = result.id || generateUUID();
         const bookingData = createBookingResponse(result, bookingId);
-      
+
         if (bookingData.lessonType === 'trial') {
           return (
             <BookingSuccess
@@ -239,7 +276,7 @@ export function Message({
             />
           );
         }
-      
+
         if (bookingData.lessonType === 'regular') {
           if (paymentProcessed) {
             const successBookingData = {
@@ -247,7 +284,7 @@ export function Message({
               emailSent: true,
               showBookingSuccess: true
             };
-            
+
             return (
               <BookingSuccess
                 booking={successBookingData}
@@ -256,7 +293,7 @@ export function Message({
               />
             );
           }
-      
+
           return (
             <PaymentFlow
               bookingDetails={bookingData}
@@ -275,7 +312,7 @@ export function Message({
             />
           );
         }
-      
+
         return null;
       }
 
@@ -304,11 +341,13 @@ export function Message({
 
       <div className="flex flex-col gap-2 w-full">
         {content && typeof content === "string" && (
-          <div 
+          <div
             className="text-zinc-800 dark:text-zinc-300 message-content"
             onClick={handleImageClick}
           >
-            <Markdown>{content}</Markdown>
+            <Markdown key={content}>
+              {processMarkdownContent(content)}
+            </Markdown>
             <style jsx global>{`
               .message-content {
                 position: relative;
@@ -336,8 +375,10 @@ export function Message({
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                max-width: 90vw;
-                max-height: 90vh;
+                max-width: 80vw;
+                max-height: 80vh;
+                width: auto;            /* 改為 auto */
+                height: auto;
                 z-index: 1001;
                 margin: 0;
                 object-fit: contain;
@@ -367,9 +408,10 @@ export function Message({
                 }
                 
                 .message-content img.expanded {
-                  width: 95vw;
+                  width: auto;
                   height: auto;
-                  max-height: 95vh;
+                  max-width: 85vw;
+                  max-height: 85vh;
                 }
               }
             `}</style>
