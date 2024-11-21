@@ -43,6 +43,7 @@ export async function getUser(email: string): Promise<Array<User>> {
 
 export async function createUser(email: string, password: string) {
   let salt = genSaltSync(10);
+  console.log("salt",salt)
   let hash = hashSync(password, salt);
 
   try {

@@ -24,13 +24,18 @@ export const login = async (
       email: formData.get("email"),
       password: formData.get("password"),
     });
-
+    console.log("sign in payload",{
+      email: validatedData.email,
+      password: validatedData.password,
+      redirect: false,
+    })
     await signIn("credentials", {
       email: validatedData.email,
       password: validatedData.password,
       redirect: false,
     });
 
+    
     return { status: "success" };
   } catch (error) {
     if (error instanceof z.ZodError) {

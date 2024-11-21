@@ -31,6 +31,9 @@ export default function Page() {
     } else if (state.status === "success") {
       toast.success("Account created successfully");
       router.refresh();
+      setTimeout(() => {
+        router.push('/');  // 明確指定要重導向的路徑
+      }, 1000);
     }
   }, [state, router]);
 
@@ -48,7 +51,7 @@ export default function Page() {
             使用您的電子郵件和密碼創建帳戶
           </p>
         </div>
-        <AuthForm action={handleSubmit} defaultEmail={email}>
+        <AuthForm action={handleSubmit} defaultEmail={email} isRegister={true}>
           <SubmitButton>註冊</SubmitButton>
           <p className="text-center text-sm text-gray-600 mt-4 dark:text-zinc-400">
             {"已經有帳號了? "}

@@ -67,39 +67,46 @@ export function Message({
 
   const processMarkdownContent = (content: string) => {
     console.log("Original content:", content);
-    
-    if (typeof content !== 'string') return content;
+
+    if (typeof content !== 'string') {
+      console.log("Content is not a string:", content);
+      return content;
+    }
+
+    if (content.includes('tool-result') || content.includes('getInformation')) {
+      try {
+        const parsed = JSON.parse(content);
+        if (parsed.result) {
+          content = parsed.result;
+        }
+      } catch (e) {
+        // 如果不是 JSON，使用原始內容
+      }
+    }
   
-    // 首先處理字串串接
+    // 清理內容
     let cleanContent = content
-      .replace(/'\s*\+\s*'/g, '') // 移除 ' + ' 的模式
-      .replace(/\\n/g, '\n')      // 處理換行符
-      .replace(/['"]\s*\+\s*['"]/g, ''); // 移除引號之間的 +
+      .replace(/^['"]|['"]$/g, '') // 移除首尾的引號
+      .replace(/\\n/g, '\n')       // 處理換行符
+      .replace(/\n\s*\+\s*\n/g, '\n') // 移除行間的 + 號
+      .trim();
   
-    console.log("After cleaning:", cleanContent);
+    console.log("After initial cleaning:", cleanContent);
   
-    // 分割成行並處理
+    // 正確處理圖片標記
     const lines = cleanContent.split('\n');
     const processedLines = lines.map(line => {
-      // 移除多餘的引號
-      line = line.replace(/^['"]|['"]$/g, '');
-      
-      // 如果是圖片標記，確保格式正確
+      line = line.trim();
+      // 特別處理圖片標記
       if (line.includes('![') && line.includes('](') && line.includes(')')) {
-        const imgMatch = line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
-        if (imgMatch) {
-          return `![${imgMatch[1]}](${imgMatch[2]})`;
-        }
+        return line; // 保持圖片標記的原始格式
       }
-      return line.trim();
-    });
+      return line;
+    }).filter(Boolean);
   
-    const result = processedLines
-      .filter(line => line) // 移除空行
-      .join('\n\n');
-  
-    console.log("Final processed content:", result);
-    return result;
+    cleanContent = processedLines.join('\n\n');
+    console.log("Final processed content:", cleanContent);
+    return cleanContent;
   };
 
   const handleImageClick = (event: React.MouseEvent<HTMLDivElement>) => {

@@ -1,8 +1,8 @@
 import React, { memo } from "react";
-
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from 'rehype-raw';
 
 const NonMemoizedMarkdown = ({ children }: { children: string }) => {
   const components = {
@@ -64,10 +64,42 @@ const NonMemoizedMarkdown = ({ children }: { children: string }) => {
         </Link>
       );
     },
+    // 添加圖片處理
+    img: ({ src, alt }: { src?: string; alt?: string }) => {
+      console.log("Rendering image with src:", src);
+      if (!src) return null;
+      
+      return (
+        <img
+          src={src}
+          alt={alt || ''}
+          className="max-w-full h-auto my-4 rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+          loading="lazy"
+          onClick={(e) => {
+            console.error("Image loading error:", e)
+            const target = e.target as HTMLImageElement;
+            if (!target.classList.contains('expanded')) {
+              const overlay = document.createElement('div');
+              overlay.className = 'fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center';
+              const img = document.createElement('img');
+              img.src = src;
+              img.className = 'max-w-[90vw] max-h-[90vh] object-contain expanded';
+              overlay.appendChild(img);
+              overlay.onclick = () => overlay.remove();
+              document.body.appendChild(overlay);
+            }
+          }}
+        />
+      );
+    },
   };
 
   return (
-    <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+    <ReactMarkdown 
+      remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeRaw]} 
+      components={components}
+    >
       {children}
     </ReactMarkdown>
   );

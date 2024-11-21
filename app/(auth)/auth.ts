@@ -22,8 +22,11 @@ export const {
       credentials: {},
       async authorize({ email, password }: any) {
         let users = await getUser(email);
+        console.log("users",users)
         if (users.length === 0) return null;
+        console.log("pwd&user",password, users[0].password!)
         let passwordsMatch = await compare(password, users[0].password!);
+        console.log("passwordmatch",passwordsMatch)
         if (passwordsMatch) return users[0] as any;
       },
     }),
@@ -44,7 +47,9 @@ export const {
       token: any;
     }) {
       if (session.user) {
+        
         session.user.id = token.id as string;
+        console.log("session",session)
       }
 
       return session;

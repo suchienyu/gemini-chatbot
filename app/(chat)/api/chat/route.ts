@@ -371,10 +371,10 @@ export async function POST(request: Request) {
       }
     };
     const systemPrompt = `
-${SYSTEM_PROMPT}
-CURRENT_LANGUAGE: ${userLanguage}
-MAINTAIN_LANGUAGE: true
-`;
+      ${SYSTEM_PROMPT}
+      CURRENT_LANGUAGE: ${userLanguage}
+      MAINTAIN_LANGUAGE: true
+      `;
 
     const result = await streamText({
       model: openaiModel,
