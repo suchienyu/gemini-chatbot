@@ -31,9 +31,6 @@ export default function Page() {
     } else if (state.status === "success") {
       toast.success("Account created successfully");
       router.refresh();
-      setTimeout(() => {
-        router.push('/');  // 明確指定要重導向的路徑
-      }, 1000);
     }
   }, [state, router]);
 

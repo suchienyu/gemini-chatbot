@@ -14,12 +14,10 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       let isLoggedIn = !!auth?.user;
-      let isOnChat = nextUrl.pathname === "/";
-      let isOnRegister = nextUrl.pathname === "/register"; 
-      let isOnLogin = nextUrl.pathname === "/login";
-      console.log("isOnChat",isOnChat,"isOnRegister",isOnRegister,"isOnLogin",isOnLogin)
-      console.log("new url",new URL("/", nextUrl))
-      console.log("nexturl",nextUrl)
+      let isOnChat = nextUrl.pathname.startsWith("/");
+      let isOnRegister = nextUrl.pathname.startsWith("/register");
+      let isOnLogin = nextUrl.pathname.startsWith("/login");
+      
       if (isLoggedIn && (isOnLogin || isOnRegister)) {
         console.log("!!!!")
         return Response.redirect(new URL("/", nextUrl));
