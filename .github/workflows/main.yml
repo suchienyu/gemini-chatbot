@@ -29,7 +29,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/chatbotapi-api:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/chatbotapi-chatbotfront:latest
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
@@ -43,10 +43,10 @@ jobs:
             docker rm app-container || true
             
             # 拉取最新的映像檔
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/chatbotapi-api:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/chatbotapi-chatbotfront:latest
             
             # 運行新的容器
             docker run -d \
               --name app-container \
               -p 3000:3000 \
-              ${{ secrets.DOCKERHUB_USERNAME }}/chatbotapi-api:latest
+              ${{ secrets.DOCKERHUB_USERNAME }}/chatbotapi-chatbotfront:latest
