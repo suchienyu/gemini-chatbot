@@ -1,7 +1,4 @@
 "use client";
-
-import { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai";
-import { motion } from "framer-motion";
 import React, {
   useRef,
   useEffect,
@@ -11,6 +8,9 @@ import React, {
   SetStateAction,
   ChangeEvent,
 } from "react";
+
+import { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 
 import { ArrowUpIcon, PaperclipIcon, StopIcon } from "./icons";
