@@ -25,17 +25,10 @@ RUN corepack enable pnpm
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 ENV NEXTAUTH_URL=http://localhost:3000
-ENV NEXT_PUBLIC_APP_URL=http://localhost:3000
-ENV BASE_URL=http://localhost:3000
-ENV AUTH_URL=http://localhost:3000/api/auth
+ENV NEXTAUTH_SECRET=temporary-build-secret
 ENV DATABASE_URL="file:./dev.db"
-ENV NEXTAUTH_SECRET=build-time-secret
-
-ENV NEXT_PUBLIC_LOGIN_PATH=/login
-ENV NEXT_PUBLIC_REGISTER_PATH=/register
-ENV NEXT_PUBLIC_HOME_PATH=/
 
 # Build the project
 RUN pnpm run build
