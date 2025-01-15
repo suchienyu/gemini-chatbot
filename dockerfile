@@ -25,9 +25,11 @@ RUN corepack enable pnpm
 
 ARG NEXTAUTH_URL
 ARG NEXTAUTH_SECRET
+ARG BLOB_READ_WRITE_TOKEN
 
 ENV NEXTAUTH_URL=${NEXTAUTH_URL:-"http://localhost:3000"}
 ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-"temporary-secret-value"}
+ENV BLOB_READ_WRITE_TOKEN=${BLOB_READ_WRITE_TOKEN}
 ENV NODE_ENV=production
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -43,12 +45,14 @@ WORKDIR /app
 
 ARG NEXTAUTH_URL
 ARG NEXTAUTH_SECRET
+ARG BLOB_READ_WRITE_TOKEN
 
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 ENV NEXTAUTH_URL=${NEXTAUTH_URL:-"http://localhost:3000"}
 ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-"temporary-secret-value"}
+ENV BLOB_READ_WRITE_TOKEN=${BLOB_READ_WRITE_TOKEN}
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
