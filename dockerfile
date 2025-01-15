@@ -22,12 +22,15 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 WORKDIR /app
 RUN corepack enable pnpm
+
+ENV NEXTAUTH_URL=http://localhost:3000
+ARG NEXTAUTH_SECRET
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-temporary-secret}
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ENV NODE_ENV=production
-ENV NEXTAUTH_URL=http://localhost:3000
-ENV NEXTAUTH_SECRET=temporary-secret
 
 # Build the project
 RUN pnpm run build
@@ -39,6 +42,10 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+
+ENV NEXTAUTH_URL=http://localhost:3000
+ARG NEXTAUTH_SECRET
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

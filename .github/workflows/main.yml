@@ -29,6 +29,8 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
+          build-args: |
+            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/chatbotapi-chatbotfront:latest
 
       - name: Deploy to EC2
