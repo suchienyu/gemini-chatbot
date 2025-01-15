@@ -28,7 +28,6 @@ COPY . .
 ENV NODE_ENV=production
 ENV NEXTAUTH_URL=http://localhost:3000
 ENV NEXTAUTH_SECRET=temporary-build-secret
-ENV DATABASE_URL="file:./dev.db"
 
 # Build the project
 RUN pnpm run build
