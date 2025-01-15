@@ -65,7 +65,7 @@ jobs:
             # 運行新的容器
             docker run -d \
               --name chatbotapi-chatbotfront-container \
-              -p 3000:3000 \
+              -p 3003:3000 \
               -e NEXTAUTH_URL=http://${{ secrets.EC2_HOST }}:3000 \
               -e NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
               -e BLOB_READ_WRITE_TOKEN=${{ secrets.BLOB_READ_WRITE_TOKEN }} \
