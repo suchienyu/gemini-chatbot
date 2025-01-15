@@ -4,7 +4,6 @@ const nextConfig = {
   env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -20,13 +19,6 @@ const nextConfig = {
   },
   experimental: {
     serverComponentsExternalPackages: ['nodemailer'],
-    serverActions: true,
-  },
-  experimental: {
-    ...nextConfig.experimental,
-    missingSuspenseWithCSRError: false,
-    workerThreads: false,
-    craCompat: false,
   },
   eslint: {
     // 暫時忽略某些 ESLint 警告
@@ -41,12 +33,6 @@ const nextConfig = {
   },
   trustHost: true,
   secret: process.env.NEXTAUTH_SECRET,
-  async redirects() {
-    return []
-  },
-  async rewrites() {
-    return []
-  }
 };
 
 export default nextConfig;
