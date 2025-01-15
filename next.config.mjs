@@ -18,7 +18,7 @@ const nextConfig = {
     return config;
   },
   experimental: {
-    serverComponentsExternalPackages: ['nodemailer'],
+    serverComponentsExternalPackages: ['nodemailer','@prisma/client', '@auth/core'],
   },
   eslint: {
     // 暫時忽略某些 ESLint 警告

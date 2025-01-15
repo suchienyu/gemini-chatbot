@@ -30,7 +30,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
-            NEXTAUTH_URL=http://localhost:3000
+            NEXTAUTH_URL=${{ env.NEXTAUTH_URL }}
             NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/chatbotapi-chatbotfront:latest
 
@@ -41,12 +41,9 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            export NEXTAUTH_URL=http://${{ secrets.EC2_HOST }}:3000
-            export NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
-
             # 停止並移除舊的容器（如果存在）
-            docker stop app-container || true
-            docker rm app-container || true
+            docker stop chatbotapi-chatbotfront-container || true
+            docker rm chatbotapi-chatbotfront-container || true
             
             # 拉取最新的映像檔
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/chatbotapi-chatbotfront:latest
