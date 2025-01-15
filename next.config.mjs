@@ -22,6 +22,12 @@ const nextConfig = {
     serverComponentsExternalPackages: ['nodemailer'],
     serverActions: true,
   },
+  experimental: {
+    ...nextConfig.experimental,
+    missingSuspenseWithCSRError: false,
+    workerThreads: false,
+    craCompat: false,
+  },
   eslint: {
     // 暫時忽略某些 ESLint 警告
     ignoreDuringBuilds: true,
@@ -35,6 +41,12 @@ const nextConfig = {
   },
   trustHost: true,
   secret: process.env.NEXTAUTH_SECRET,
+  async redirects() {
+    return []
+  },
+  async rewrites() {
+    return []
+  }
 };
 
 export default nextConfig;

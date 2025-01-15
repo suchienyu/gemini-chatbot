@@ -26,13 +26,10 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ENV NODE_ENV=production
-ENV NEXTAUTH_URL=http://localhost:3000
+ENV NEXTAUTH_URL=http://127.0.0.1:3000
 ENV NEXTAUTH_SECRET=temporary-secret
-
 ENV BLOB_READ_WRITE_TOKEN=temporary-token
-ENV EDGE_CONFIG=''
-ENV VERCEL_URL=localhost:3000
-ENV BLOB_ACTIVE_REGION=auto
+ENV VERCEL_URL="127.0.0.1:3000"
 
 # Build the project
 RUN pnpm run build
