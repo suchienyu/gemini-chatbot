@@ -27,7 +27,6 @@ jobs:
         uses: docker/build-push-action@v5
         env:
           NEXTAUTH_URL: "http://localhost:3000"
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
         with:
           context: .
           platforms: linux/amd64,linux/arm64
@@ -36,6 +35,7 @@ jobs:
             NEXTAUTH_URL=${{ env.NEXTAUTH_URL }}
             NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
             BLOB_READ_WRITE_TOKEN=${{ secrets.BLOB_READ_WRITE_TOKEN }}
+            VERCEL_URL=localhost:3000
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/chatbotapi-chatbotfront:latest
 
       - name: Deploy to EC2
@@ -59,4 +59,5 @@ jobs:
               -e NEXTAUTH_URL=http://${{ secrets.EC2_HOST }}:3000 \
               -e NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
               -e BLOB_READ_WRITE_TOKEN=${{ secrets.BLOB_READ_WRITE_TOKEN }} \
+              -e VERCEL_URL=${{ secrets.EC2_HOST }}:3000 \
               ${{ secrets.DOCKERHUB_USERNAME }}/chatbotapi-chatbotfront:latest
