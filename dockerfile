@@ -26,11 +26,10 @@ RUN corepack enable pnpm
 ENV NEXTAUTH_URL=http://localhost:3000
 ARG NEXTAUTH_SECRET
 ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-temporary-secret}
+ENV NODE_ENV=production
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-ENV NODE_ENV=production
 
 # Build the project
 RUN pnpm run build

@@ -20,8 +20,7 @@ export const authConfig = {
       
       if (isLoggedIn && (isOnLogin || isOnRegister)) {
         console.log("!!!!")
-        //return Response.redirect(new URL("/", nextUrl));
-        return Response.redirect("/");
+        return Response.redirect(new URL("/", nextUrl));
       }
 
       if (isOnRegister || isOnLogin) {
