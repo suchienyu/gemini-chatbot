@@ -4,6 +4,7 @@ const nextConfig = {
   env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -18,7 +19,8 @@ const nextConfig = {
     return config;
   },
   experimental: {
-    serverComponentsExternalPackages: ['nodemailer']
+    serverComponentsExternalPackages: ['nodemailer'],
+    serverActions: true,
   },
   eslint: {
     // 暫時忽略某些 ESLint 警告
