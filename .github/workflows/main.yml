@@ -46,6 +46,7 @@ jobs:
             NEXTAUTH_URL_INTERNAL=${{ secrets.NEXTAUTH_URL_INTERNAL }}
             NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
             OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            NEXT_PUBLIC_API_DOMAIN=${{secrets.NEXT_PUBLIC_API_DOMAIN}}
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/chatbotapi-chatbotfront:latest
 
       - name: Deploy to EC2
