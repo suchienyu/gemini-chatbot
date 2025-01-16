@@ -56,7 +56,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             # 進入專案目錄（確保 docker-compose.yml 在這裡）
-            cd /home/ubuntu/vercel-chatbot
+            cd /home/ubuntu/vercel-chatbotAPI
             
             # 停止現有的api容器
             docker compose down chatbotfront
