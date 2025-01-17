@@ -23,6 +23,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: NEXT_PUBLIC_API_DOMAIN
+        run: |
+          echo "Checking environment variables presence:"
+          echo "NEXT_PUBLIC_API_DOMAIN is set: ${{ secrets.NEXT_PUBLIC_API_DOMAIN != '' }}"
+
       - name: Build and push
         uses: docker/build-push-action@v5
         env:
@@ -62,6 +67,8 @@ jobs:
             # 停止現有的api容器
             docker compose down chatbotfront
             
+            docker pull chiennn/chatbotapi-chatbotfront:latest
+            docker rmi $(docker images -f "dangling=true" -q)
+
             # 重新建構 API 容器並啟動所有服務
-            docker compose build --no-cache chatbotfront
             docker compose up -d chatbotfront
