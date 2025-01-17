@@ -89,7 +89,7 @@ async function getInformation({ query, language }: { query: string; language: st
     console.log('Query vector generated:', queryVector[0]);
 
     //const apiDomain = process.env.NEXT_PUBLIC_API_DOMAIN || 'localhost';
-    const apiUrl = `http://${process.env.NEXT_PUBLIC_API_DOMAIN}:3002/api/chat`;
+    const apiUrl = `http://api:3002/api/chat`;
     console.log('Attempting to fetch from:', apiUrl);
 
     const response = await fetch(apiUrl, {
